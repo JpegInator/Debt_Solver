@@ -1,0 +1,51 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">💳 Добавить кредитную карту</h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-success">Добавить карту</button>
+                </form>
+            </div>
+        </div>
+
+         {% if cards %}
+        <div class="card shadow">
+            <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">📋 Добавленные карты</h4>
+                <span class="badge bg-light text-dark">{{ cards|length }} карт(ы)</span>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    {% for card in cards %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ card.name }}</strong><br>
+                            <small class="text-muted">
+                                Долг: {{ card.current_debt }} ₽ |
+                                Ставка: {{ card.interest_rate }}% |
+                                Лимит: {{ card.credit_limit }} ₽ |
+                                Мин. платёж: {{ card.min_payment_percent }}%
+                            </small>
+                        </div>
+                        <a href="{% url 'core:delete_card' card.id %}"
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('Удалить карту {{ card.name }}?')">
+                            🗑️ Удалить
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

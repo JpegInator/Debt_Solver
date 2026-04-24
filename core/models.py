@@ -1,10 +1,11 @@
 from django.db import models
+from django.db.models import Manager
 
 
 class CreditCard(models.Model):
-
     """Модель кредитной карты"""
 
+    objects = Manager()
     name = models.CharField(max_length=100, verbose_name="Название карты")
     credit_limit = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Кредитный лимит")
     interest_rate = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Годовая ставка (%)")
@@ -20,9 +21,9 @@ class CreditCard(models.Model):
 
 
 class PaymentSchedule(models.Model):
-
     """График платежей по карте"""
 
+    objects = Manager()
     card = models.ForeignKey(CreditCard, on_delete=models.CASCADE, related_name="payments", verbose_name="Карта")
     month = models.IntegerField(verbose_name="Номер месяца")
     payment_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Сумма платежа")
@@ -39,9 +40,9 @@ class PaymentSchedule(models.Model):
 
 
 class CalculationHistory(models.Model):
-
     """История расчётов"""
 
+    objects = Manager()
     session_id = models.CharField(max_length=100, blank=True, verbose_name="ID сессии")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата расчёта")
     cards_snapshot = models.JSONField(verbose_name="Снимок данных карт")
