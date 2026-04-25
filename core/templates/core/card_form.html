@@ -16,36 +16,72 @@
             </div>
         </div>
 
-         {% if cards %}
+
+        {% if cards %}
         <div class="card shadow">
             <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">📋 Добавленные карты</h4>
+                <h4 class="mb-0">📋 Мои карты</h4>
                 <span class="badge bg-light text-dark">{{ cards|length }} карт(ы)</span>
             </div>
             <div class="card-body">
-                <ul class="list-group">
-                    {% for card in cards %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>{{ card.name }}</strong><br>
-                            <small class="text-muted">
-                                Долг: {{ card.current_debt }} ₽ |
-                                Ставка: {{ card.interest_rate }}% |
-                                Лимит: {{ card.credit_limit }} ₽ |
-                                Мин. платёж: {{ card.min_payment_percent }}%
-                            </small>
-                        </div>
-                        <a href="{% url 'core:delete_card' card.id %}"
-                           class="btn btn-danger btn-sm"
-                           onclick="return confirm('Удалить карту {{ card.name }}?')">
-                            🗑️ Удалить
-                        </a>
-                    </li>
-                    {% endfor %}
-                </ul>
+                <form method="post" action="{% url 'core:calculate' %}">
+                    {% csrf_token %}
+                    <ul class="list-group">
+                        {% for card in cards %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <input type="checkbox" name="selected_cards" value="{{ card.id }}" class="form-check-input me-2" id="card_{{ card.id }}">
+                                <label for="card_{{ card.id }}" class="fw-bold">
+                                    {{ card.name }}
+                                </label>
+                                <br>
+                                <small class="text-muted">
+                                    💰 Долг: {{ card.current_debt }} ₽ |
+                                    📈 Ставка: {{ card.interest_rate }}% |
+                                    💳 Лимит: {{ card.credit_limit }} ₽ |
+                                    🔄 Мин. платёж: {{ card.min_payment_percent }}%
+                                </small>
+                            </div>
+                            <a href="{% url 'core:delete_card' card.id %}"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Удалить карту {{ card.name }}?')">
+                                🗑️
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <button type="submit" class="btn btn-success mt-3" id="calculateBtn" disabled>
+                        🧮 Рассчитать выбранные (нужно выбрать 2-5 карт)
+                    </button>
+                </form>
             </div>
         </div>
         {% endif %}
     </div>
 </div>
+
+<script>
+    const checkboxes = document.querySelectorAll('input[name="selected_cards"]');
+    const calculateBtn = document.getElementById('calculateBtn');
+
+    function updateButton() {
+        const checked = document.querySelectorAll('input[name="selected_cards"]:checked').length;
+        calculateBtn.disabled = checked < 2 || checked > 5;
+
+        if (checked < 2) {
+            calculateBtn.textContent = '🔒 Выберите минимум 2 карты';
+        } else if (checked > 5) {
+            calculateBtn.textContent = '🔒 Выберите не более 5 карт';
+        } else {
+            calculateBtn.textContent = '🧮 Рассчитать выбранные';
+        }
+    }
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateButton);
+    });
+
+    updateButton();
+</script>
+
 {% endblock %}

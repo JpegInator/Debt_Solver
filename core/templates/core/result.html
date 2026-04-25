@@ -1,0 +1,25 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0">📊 Результат расчёта</h3>
+            </div>
+            <div class="card-body">
+                <h5>Выбранные карты:</h5>
+                <ul>
+                    {% for card in cards %}
+                    <li>{{ card.name }} — долг {{ card.current_debt }} ₽, ставка {{ card.interest_rate }}%</li>
+                    {% endfor %}
+                </ul>
+                <p class="text-muted mt-3">
+                    🚧 Логика расчёта переплаты и график платежей будут добавлены позже.
+                </p>
+                <a href="{% url 'core:add_card' %}" class="btn btn-primary">← Назад к картам</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

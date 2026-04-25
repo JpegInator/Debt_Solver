@@ -19,3 +19,20 @@ def delete_card(request, card_id):
     card = get_object_or_404(CreditCard, id=card_id)
     card.delete()
     return redirect('core:add_card')
+
+
+def calculate(request):
+    if request.method == 'POST':
+        selected_ids = request.POST.getlist('selected_cards')
+
+        if len(selected_ids) < 2 or len(selected_ids) > 5:
+
+            return redirect('core:add_card')
+
+        cards = CreditCard.objects.filter(id__in=selected_ids)
+
+        # TODO: здесь будет логика расчёта переплаты и графика
+
+        return render(request, 'core/result.html', {'cards': cards})
+
+    return redirect('core:add_card')
